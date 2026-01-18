@@ -87,7 +87,7 @@ describe("GovernancePlatform Integration", function () {
       // Step 1: User stakes tokens
       const stakeAmount = hre.ethers.parseEther("1000");
       await token.connect(voter1).approve(await staking.getAddress(), stakeAmount);
-      await staking.connect(voter1).stake(stakeAmount, 2); // OneMonth lock
+      await staking.connect(voter1).stake(stakeAmount, 2); // OneMonth lock (enum value 2)
 
       // Step 2: Create proposal
       await voting.connect(proposer).createProposal(
@@ -213,6 +213,11 @@ describe("GovernancePlatform Integration", function () {
       // Create multiple activities
       await voting.connect(proposer).createProposal("Proposal 1", "Test", 0, 7 * 24 * 60 * 60);
       await reputation.awardReputation(proposer.address, 50, "Proposal creation"); // +50
+
+      // Stake tokens first
+      const voterStakeAmount = hre.ethers.parseEther("500");
+      await token.connect(voter1).approve(await staking.getAddress(), voterStakeAmount);
+      await staking.connect(voter1).stake(voterStakeAmount, 1); // OneWeek
 
       // Vote on proposal
       await voting.connect(voter1).castVote(1, 1);

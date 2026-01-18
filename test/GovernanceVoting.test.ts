@@ -228,9 +228,9 @@ describe("GovernanceVoting", function () {
       await token.connect(voter2).approve(await staking.getAddress(), stakeAmount);
       await token.connect(voter3).approve(await staking.getAddress(), stakeAmount);
       
-      await staking.connect(voter1).stake(stakeAmount, 0);
-      await staking.connect(voter2).stake(stakeAmount, 0);
-      await staking.connect(voter3).stake(stakeAmount, 0);
+      await staking.connect(voter1).stake(stakeAmount, 1);
+      await staking.connect(voter2).stake(stakeAmount, 1);
+      await staking.connect(voter3).stake(stakeAmount, 1);
 
       await voting.connect(proposer).createProposal("Test", "Test", 0, 7 * 24 * 60 * 60);
 

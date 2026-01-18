@@ -88,7 +88,7 @@ describe("OnchainDiscussions", function () {
       expect(comment.parentCommentId).to.equal(1);
 
       const [, replyIds] = await discussions.getComment(1);
-      expect(replyIds).to.include(2);
+      expect(replyIds).to.include(2n); // BigInt comparison
     });
 
     it("Should not allow commenting on non-existent discussion", async function () {
