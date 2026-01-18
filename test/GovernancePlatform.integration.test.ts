@@ -207,7 +207,7 @@ describe("GovernancePlatform Integration", function () {
 
   describe("Reputation Level Progression", function () {
     it("Should progress user through reputation levels", async function () {
-      const { reputation, discussions, voting, platform, proposer, voter1 } = 
+      const { token, staking, reputation, discussions, voting, platform, proposer, voter1 } = 
         await loadFixture(deployPlatformFixture);
 
       // Create multiple activities

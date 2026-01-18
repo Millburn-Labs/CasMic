@@ -81,7 +81,8 @@ describe("GovernanceVoting", function () {
         .to.emit(voting, "VoteCast");
 
       const [forVotes] = await voting.getProposalResults(1);
-      expect(forVotes).to.equal(stakeAmount); // 1 token = 1 vote in simple voting
+      const votingPower = await staking.getEffectiveVotingPower(voter1.address);
+      expect(forVotes).to.equal(votingPower); // Should equal effective voting power (with multiplier)
     });
 
     it("Should not allow voting after deadline", async function () {
