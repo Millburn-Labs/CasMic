@@ -71,7 +71,7 @@ describe("GovernanceVoting", function () {
       // Stake tokens
       const stakeAmount = hre.ethers.parseEther("1000");
       await token.connect(voter1).approve(await staking.getAddress(), stakeAmount);
-      await staking.connect(voter1).stake(stakeAmount, 0); // No lock
+      await staking.connect(voter1).stake(stakeAmount, 1); // OneWeek lock (can't use 0)
 
       // Create proposal
       await voting.connect(proposer).createProposal("Test", "Test", 0, 7 * 24 * 60 * 60);
@@ -89,7 +89,7 @@ describe("GovernanceVoting", function () {
 
       const stakeAmount = hre.ethers.parseEther("1000");
       await token.connect(voter1).approve(await staking.getAddress(), stakeAmount);
-      await staking.connect(voter1).stake(stakeAmount, 0);
+      await staking.connect(voter1).stake(stakeAmount, 1);
 
       await voting.connect(proposer).createProposal("Test", "Test", 0, 7 * 24 * 60 * 60);
 
@@ -104,7 +104,7 @@ describe("GovernanceVoting", function () {
 
       const stakeAmount = hre.ethers.parseEther("1000");
       await token.connect(voter1).approve(await staking.getAddress(), stakeAmount);
-      await staking.connect(voter1).stake(stakeAmount, 0);
+      await staking.connect(voter1).stake(stakeAmount, 1);
 
       await voting.connect(proposer).createProposal("Test", "Test", 0, 7 * 24 * 60 * 60);
 
@@ -121,7 +121,7 @@ describe("GovernanceVoting", function () {
 
       const stakeAmount = hre.ethers.parseEther("10000"); // 10000 tokens
       await token.connect(voter1).approve(await staking.getAddress(), stakeAmount);
-      await staking.connect(voter1).stake(stakeAmount, 0);
+      await staking.connect(voter1).stake(stakeAmount, 1);
 
       await voting.connect(proposer).createProposal("Test", "Test", 1, 7 * 24 * 60 * 60); // Quadratic
 
@@ -141,7 +141,7 @@ describe("GovernanceVoting", function () {
 
       const stakeAmount = hre.ethers.parseEther("1000");
       await token.connect(voter1).approve(await staking.getAddress(), stakeAmount);
-      await staking.connect(voter1).stake(stakeAmount, 0);
+      await staking.connect(voter1).stake(stakeAmount, 1);
 
       await voting.connect(proposer).createProposal("Test", "Test", 0, 7 * 24 * 60 * 60);
 
@@ -156,8 +156,8 @@ describe("GovernanceVoting", function () {
       const stakeAmount = hre.ethers.parseEther("1000");
       await token.connect(voter1).approve(await staking.getAddress(), stakeAmount);
       await token.connect(voter2).approve(await staking.getAddress(), stakeAmount);
-      await staking.connect(voter1).stake(stakeAmount, 0);
-      await staking.connect(voter2).stake(stakeAmount, 0);
+      await staking.connect(voter1).stake(stakeAmount, 1);
+      await staking.connect(voter2).stake(stakeAmount, 1);
 
       await voting.connect(proposer).createProposal("Test", "Test", 0, 7 * 24 * 60 * 60);
 
@@ -174,7 +174,7 @@ describe("GovernanceVoting", function () {
 
       const stakeAmount = hre.ethers.parseEther("1000");
       await token.connect(voter1).approve(await staking.getAddress(), stakeAmount);
-      await staking.connect(voter1).stake(stakeAmount, 0);
+      await staking.connect(voter1).stake(stakeAmount, 1);
 
       await voting.connect(proposer).createProposal("Test", "Test", 0, 7 * 24 * 60 * 60);
 
@@ -189,7 +189,7 @@ describe("GovernanceVoting", function () {
 
       const stakeAmount = hre.ethers.parseEther("1000");
       await token.connect(voter1).approve(await staking.getAddress(), stakeAmount);
-      await staking.connect(voter1).stake(stakeAmount, 0);
+      await staking.connect(voter1).stake(stakeAmount, 1);
 
       // Create multiple proposals
       await voting.connect(proposer).createProposal("Proposal 1", "Test", 0, 7 * 24 * 60 * 60);
