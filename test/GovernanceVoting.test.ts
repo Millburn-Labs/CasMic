@@ -204,9 +204,11 @@ describe("GovernanceVoting", function () {
       const [for2] = await voting.getProposalResults(2);
       const [, against3] = await voting.getProposalResults(3);
 
-      expect(for1).to.equal(stakeAmount);
-      expect(for2).to.equal(stakeAmount);
-      expect(against3).to.equal(stakeAmount);
+      // With 1.2x multiplier (OneWeek lock)
+      const expectedPower = hre.ethers.parseEther("1200"); // 1000 * 1.2
+      expect(for1).to.equal(expectedPower);
+      expect(for2).to.equal(expectedPower);
+      expect(against3).to.equal(expectedPower);
     });
 
     it("Should enforce batch size limit", async function () {
@@ -241,10 +243,11 @@ describe("GovernanceVoting", function () {
 
       const [forVotes, againstVotes, abstainVotes, totalPower] = await voting.getProposalResults(1);
 
-      expect(forVotes).to.equal(hre.ethers.parseEther("2000"));
-      expect(againstVotes).to.equal(hre.ethers.parseEther("1000"));
+      // With 1.2x multiplier (OneWeek lock), each 1000 tokens = 1200 voting power
+      expect(forVotes).to.equal(hre.ethers.parseEther("2400")); // 2000 * 1.2
+      expect(againstVotes).to.equal(hre.ethers.parseEther("1200")); // 1000 * 1.2
       expect(abstainVotes).to.equal(0);
-      expect(totalPower).to.equal(hre.ethers.parseEther("3000"));
+      expect(totalPower).to.equal(hre.ethers.parseEther("3600")); // 3000 * 1.2
     });
   });
 });
