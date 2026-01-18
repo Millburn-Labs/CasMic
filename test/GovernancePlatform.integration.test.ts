@@ -212,16 +212,16 @@ describe("GovernancePlatform Integration", function () {
 
       // Create multiple activities
       await voting.connect(proposer).createProposal("Proposal 1", "Test", 0, 7 * 24 * 60 * 60);
-      await platform.handleProposalReward(proposer.address, 1); // +50
+      await reputation.awardReputation(proposer.address, 50, "Proposal creation"); // +50
 
       // Vote on proposal
       await voting.connect(voter1).castVote(1, 1);
-      await platform.handleVotingReward(voter1.address, 1); // +10
+      await reputation.awardReputation(voter1.address, 10, "Voting"); // +10
 
       // Create discussion and comment
       await discussions.connect(voter1).createDiscussion(1, "Discussion", "Content");
       await discussions.connect(voter1).addComment(1, "Comment", 0);
-      await platform.handleCommentReward(voter1.address); // +5
+      await reputation.awardReputation(voter1.address, 5, "Commenting"); // +5
 
       // Check reputation
       let [level, points] = await reputation.getUserReputation(voter1.address);
@@ -257,12 +257,18 @@ describe("GovernancePlatform Integration", function () {
 
       // Create proposal twice
       await voting.connect(proposer).createProposal("Proposal 1", "Test", 0, 7 * 24 * 60 * 60);
-      await platform.handleProposalReward(proposer.address, 1);
-
+      
+      // Mint badge after first proposal
+      if (!(await badge.hasBadge(proposer.address, 1))) {
+        await badge.mintBadge(proposer.address, 1, "ipfs://QmProposalCreatorBadge");
+      }
       const badgeId1 = await badge.getUserBadge(proposer.address, 1);
 
       await voting.connect(proposer).createProposal("Proposal 2", "Test", 0, 7 * 24 * 60 * 60);
-      await platform.handleProposalReward(proposer.address, 2);
+      
+      // Try to mint again - should fail
+      await expect(badge.mintBadge(proposer.address, 1, "ipfs://QmProposalCreatorBadge2"))
+        .to.be.revertedWith("User already has this badge type");
 
       const badgeId2 = await badge.getUserBadge(proposer.address, 1);
 
