@@ -5,6 +5,49 @@
 
 import hre from "hardhat";
 
+/**
+ * Helper function to verify contracts on block explorer
+ */
+async function verifyContract(
+  contractAddress: string,
+  contractName: string,
+  constructorArguments: any[] = []
+) {
+  // Skip verification for local networks
+  if (hre.network.name === "hardhat" || hre.network.name === "localhost") {
+    console.log(`⏭️  Skipping verification for ${contractName} on local network`);
+    return;
+  }
+
+  // Skip if no API key is set
+  const apiKey = process.env.BASESCAN_API_KEY || process.env.ETHERSCAN_API_KEY;
+  if (!apiKey) {
+    console.log(`⚠️  Skipping verification for ${contractName} - no API key found`);
+    return;
+  }
+
+  try {
+    console.log(`\n🔍 Verifying ${contractName} at ${contractAddress}...`);
+    
+    // Wait a bit for the contract to be indexed by the block explorer
+    await new Promise((resolve) => setTimeout(resolve, 10000)); // 10 seconds
+    
+    await hre.run("verify:verify", {
+      address: contractAddress,
+      constructorArguments: constructorArguments,
+    });
+    
+    console.log(`✓ ${contractName} verified successfully`);
+  } catch (error: any) {
+    if (error.message.includes("Already Verified")) {
+      console.log(`✓ ${contractName} already verified`);
+    } else {
+      console.error(`⚠️  Failed to verify ${contractName}:`, error.message);
+      // Don't throw - continue with deployment even if verification fails
+    }
+  }
+}
+
 async function main() {
   const signers = await hre.ethers.getSigners();
   
@@ -35,6 +78,7 @@ async function main() {
   await governanceToken.waitForDeployment();
   const tokenAddress = await governanceToken.getAddress();
   console.log(`✓ GovernanceToken deployed at: ${tokenAddress}`);
+  await verifyContract(tokenAddress, "GovernanceToken", [tokenName, tokenSymbol]);
 
   // Step 2: Deploy ReputationSystem
   console.log("\n[2/7] Deploying ReputationSystem...");
@@ -43,6 +87,7 @@ async function main() {
   await reputationSystem.waitForDeployment();
   const reputationAddress = await reputationSystem.getAddress();
   console.log(`✓ ReputationSystem deployed at: ${reputationAddress}`);
+  await verifyContract(reputationAddress, "ReputationSystem", []);
 
   // Step 3: Deploy GovernanceBadgeNFT
   console.log("\n[3/7] Deploying GovernanceBadgeNFT...");
@@ -51,6 +96,7 @@ async function main() {
   await badgeNFT.waitForDeployment();
   const badgeAddress = await badgeNFT.getAddress();
   console.log(`✓ GovernanceBadgeNFT deployed at: ${badgeAddress}`);
+  await verifyContract(badgeAddress, "GovernanceBadgeNFT", [badgeName, badgeSymbol]);
 
   // Step 4: Deploy TokenStaking
   console.log("\n[4/7] Deploying TokenStaking...");
@@ -59,6 +105,7 @@ async function main() {
   await tokenStaking.waitForDeployment();
   const stakingAddress = await tokenStaking.getAddress();
   console.log(`✓ TokenStaking deployed at: ${stakingAddress}`);
+  await verifyContract(stakingAddress, "TokenStaking", [tokenAddress]);
 
   // Step 5: Deploy GovernanceVoting
   console.log("\n[5/7] Deploying GovernanceVoting...");
@@ -67,6 +114,7 @@ async function main() {
   await governanceVoting.waitForDeployment();
   const votingAddress = await governanceVoting.getAddress();
   console.log(`✓ GovernanceVoting deployed at: ${votingAddress}`);
+  await verifyContract(votingAddress, "GovernanceVoting", [stakingAddress]);
 
   // Step 6: Deploy OnchainDiscussions
   console.log("\n[6/7] Deploying OnchainDiscussions...");
@@ -75,6 +123,7 @@ async function main() {
   await discussions.waitForDeployment();
   const discussionsAddress = await discussions.getAddress();
   console.log(`✓ OnchainDiscussions deployed at: ${discussionsAddress}`);
+  await verifyContract(discussionsAddress, "OnchainDiscussions", []);
 
   // Step 7: Deploy GovernancePlatform
   console.log("\n[7/7] Deploying GovernancePlatform...");
@@ -90,6 +139,18 @@ async function main() {
   await governancePlatform.waitForDeployment();
   const platformAddress = await governancePlatform.getAddress();
   console.log(`✓ GovernancePlatform deployed at: ${platformAddress}`);
+  await verifyContract(
+    platformAddress,
+    "GovernancePlatform",
+    [
+      tokenAddress,
+      reputationAddress,
+      badgeAddress,
+      stakingAddress,
+      votingAddress,
+      discussionsAddress,
+    ]
+  );
 
   // Step 8: Setup roles
   console.log("\n" + "=".repeat(60));
