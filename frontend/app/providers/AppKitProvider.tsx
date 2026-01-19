@@ -11,13 +11,10 @@
  * - Base Sepolia Testnet (Chain ID: 84532)
  */
 
-import { createAppKit } from "@reown/appkit/react";
+import { AppKitProvider as ReownAppKitProvider } from "@reown/appkit/react";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import { base, baseSepolia } from "@reown/appkit/networks";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider } from "wagmi";
-import { createConfig, http } from "wagmi";
-import { publicProvider } from "wagmi/providers/public";
 
 // Configure Base networks
 const baseMainnet = {
@@ -30,14 +27,18 @@ const baseSepoliaTestnet = {
   name: "Base Sepolia",
 };
 
-// Wagmi config
-const wagmiConfig = createConfig({
-  chains: [baseMainnet, baseSepoliaTestnet],
-  providers: [publicProvider()],
-  transports: {
-    [baseMainnet.id]: http(),
-    [baseSepoliaTestnet.id]: http(),
-  },
+// Get project ID
+const projectId = process.env.NEXT_PUBLIC_REOWN_PROJECT_ID || "";
+
+if (!projectId) {
+  console.warn("NEXT_PUBLIC_REOWN_PROJECT_ID is not set. Wallet connection will not work.");
+}
+
+// Create Wagmi adapter
+const wagmiAdapter = new WagmiAdapter({
+  projectId,
+  networks: [baseMainnet, baseSepoliaTestnet],
+  ssr: true,
 });
 
 // React Query client
@@ -51,29 +52,24 @@ const metadata = {
   icons: [],
 };
 
-// Create AppKit
-const AppKit = createAppKit({
-  adapters: [WagmiAdapter({ wagmiConfig })],
-  networks: [baseMainnet, baseSepoliaTestnet],
-  projectId: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID || "",
-  metadata,
-  features: {
-    analytics: true,
-    email: true,
-    socials: ["github", "twitter", "discord"],
-  },
-  themeMode: "light",
-  themeVariables: {
-    "--w3m-accent": "#2563eb",
-  },
-});
-
 export default function AppKitProvider({ children }: { children: React.ReactNode }) {
   return (
-    <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <AppKit.Provider>{children}</AppKit.Provider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <ReownAppKitProvider
+      projectId={projectId}
+      networks={[baseMainnet, baseSepoliaTestnet]}
+      adapters={[wagmiAdapter]}
+      metadata={metadata}
+      features={{
+        analytics: true,
+        email: true,
+        socials: ["github", "discord"],
+      }}
+      themeMode="light"
+      themeVariables={{
+        "--w3m-accent": "#2563eb",
+      }}
+    >
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </ReownAppKitProvider>
   );
 }
