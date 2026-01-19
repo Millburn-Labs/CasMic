@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@reown/appkit/dist/index.css";
 
 :root {
   --background: #ffffff;
