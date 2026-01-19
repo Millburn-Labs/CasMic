@@ -6,5 +6,6 @@ export { default as ReputationLevels } from "./ReputationLevels";
 export { default as ReputationLevel } from "./ReputationLevel";
 export { default as CTA } from "./CTA";
 export { default as Footer } from "./Footer";
+export { default as WalletButton } from "./WalletButton";
 
 
