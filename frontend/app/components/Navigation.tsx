@@ -1,11 +1,8 @@
 "use client";
 
-export default function Navigation() {
-  const handleConnect = () => {
-    // TODO: Implement wallet connection
-    console.log("Connect wallet clicked");
-  };
+import WalletButton from "./WalletButton";
 
+export default function Navigation() {
   return (
     <nav className="border-b border-neutral-200 dark:border-neutral-800">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4">
@@ -26,12 +23,7 @@ export default function Navigation() {
             >
               How It Works
             </a>
-            <button
-              onClick={handleConnect}
-              className="rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-50 dark:hover:bg-neutral-800 sm:px-4"
-            >
-              Connect
-            </button>
+            <WalletButton variant="secondary" size="md" />
           </div>
         </div>
       </div>
