@@ -34,14 +34,15 @@ if (!projectId) {
   console.warn("NEXT_PUBLIC_REOWN_PROJECT_ID is not set. Wallet connection will not work.");
 }
 
-// Create Wagmi adapter
+// Create Wagmi adapter (must be outside component)
+// The adapter automatically detects injected wallets (MetaMask, Rabby, etc.)
 const wagmiAdapter = new WagmiAdapter({
   projectId,
   networks: [baseMainnet, baseSepoliaTestnet],
   ssr: true,
 });
 
-// React Query client
+// React Query client (must be outside component)
 const queryClient = new QueryClient();
 
 // AppKit metadata
@@ -60,7 +61,7 @@ export default function AppKitProvider({ children }: { children: React.ReactNode
       adapters={[wagmiAdapter]}
       metadata={metadata}
       features={{
-        analytics: true,
+        analytics: false, // Disabled to reduce console noise
         email: true,
         socials: ["github", "discord"],
       }}
@@ -68,6 +69,9 @@ export default function AppKitProvider({ children }: { children: React.ReactNode
       themeVariables={{
         "--w3m-accent": "#2563eb",
       }}
+      enableEIP6963={true}
+      enableCoinbase={true}
+      enableInjected={true}
     >
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </ReownAppKitProvider>
