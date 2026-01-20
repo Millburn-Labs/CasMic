@@ -1,6 +1,8 @@
 "use client";
 
-import { useAppKitAccount, useAppKit } from "@reown/appkit/react";
+import { useAccount } from "wagmi";
+import { useState } from "react";
+import WalletModal from "./WalletModal";
 
 interface WalletButtonProps {
   variant?: "primary" | "secondary";
@@ -13,8 +15,8 @@ export default function WalletButton({
   size = "md",
   className = "",
 }: WalletButtonProps) {
-  const { isConnected, address } = useAppKitAccount();
-  const { open } = useAppKit();
+  const { address, isConnected } = useAccount();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const baseClasses = "rounded-md font-medium transition-colors";
   const sizeClasses = {
@@ -31,11 +33,7 @@ export default function WalletButton({
   };
 
   const handleClick = () => {
-    if (isConnected) {
-      open({ view: "Account" });
-    } else {
-      open({ view: "Connect" });
-    }
+    setIsModalOpen(true);
   };
 
   const formatAddress = (addr: string) => {
@@ -43,11 +41,14 @@ export default function WalletButton({
   };
 
   return (
-    <button
-      onClick={handleClick}
-      className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
-    >
-      {isConnected ? formatAddress(address || "") : "Connect"}
-    </button>
+    <>
+      <button
+        onClick={handleClick}
+        className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
+      >
+        {isConnected ? formatAddress(address || "") : "Connect"}
+      </button>
+      <WalletModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    </>
   );
 }
